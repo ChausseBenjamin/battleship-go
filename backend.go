@@ -93,6 +93,11 @@ type player struct {
 // boat sizes are defined by the boatlist variable.
 // Consult it for more info.
 func initBoat(plyr *player, boat [4]int) {
+	// What is boat [4]int ?
+	//	boat[0]: ID of the boat being placed
+	//	boat[1]: 0 for horizontal placement, 1 for vertical placement
+	//	boat[2]: x coordinate for the upper left end of the boat
+	//	boat[3]: y coordinate for the upper left end of the boat
 	boatID := boat[0]
 	boat_length := len(boatlist[boatID][0])
 	x, y := boat[2], boat[3]

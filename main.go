@@ -23,26 +23,31 @@ func main() {
 		if settings.debug {
 			fmt.Println("# #---TESTING SEQUENCE---# #")
 
-			player_one.primary = [10][10][3]int{} // Empty plyr1 board
-			// Initialising boats on the board work* (see initBoat TODOS)
-			initBoat(&player_one, [4]int{0, 0, 0, 0}) // Index 0 -> Carrier
-			initBoat(&player_one, [4]int{1, 0, 6, 9}) // Index 1 -> Battleship
-			initBoat(&player_one, [4]int{2, 1, 4, 3}) // Index 2 -> Destroyer
-			initBoat(&player_one, [4]int{3, 1, 7, 1}) // Index 3 -> Submarine
-			initBoat(&player_one, [4]int{4, 1, 1, 8}) // Index 4 -> PatrolBoat
-			// fmt.Println("Player 1:")
-			// fmt.Print(player_one.PrimaryDisplay())
+			// Making an empty player_one board canvas to place boats:
+			player_one.primary = [10][10][3]int{}
+			// Index 0 -> Carrier // (x,y) = (0,0) // Horizontal:
+			initBoat(&player_one, [4]int{0, 0, 0, 0})
+			// Index 1 -> Battleship // (x,y) = (6,9) // Horizontal:
+			initBoat(&player_one, [4]int{1, 0, 6, 9})
+			// Index 2 -> Destroyer // (x,y) = (4,3) // Vertical:
+			initBoat(&player_one, [4]int{2, 1, 4, 3})
+			// Index 3 -> Submarine // (x,y) = (7,1) // Vertical:
+			initBoat(&player_one, [4]int{3, 1, 7, 1})
+			// Index 4 -> PatrolBoat // (x,y) = (1,8) // Vertical:
+			initBoat(&player_one, [4]int{4, 1, 1, 8})
 
-			// Initialising the board works
-			// fmt.Println("Empty:")
-			// fmt.Print(player_one.PrimaryDisplay())
-
-			player_two.primary = [10][10][3]int{}     // Empty plyr2 board
-			initBoat(&player_two, [4]int{0, 0, 3, 3}) // Index 0 -> Carrier
-			initBoat(&player_two, [4]int{1, 0, 4, 8}) // Index 1 -> Battleship
-			initBoat(&player_two, [4]int{2, 1, 2, 4}) // Index 2 -> Destroyer
-			initBoat(&player_two, [4]int{3, 1, 9, 0}) // Index 3 -> Submarine
-			initBoat(&player_two, [4]int{4, 1, 7, 4}) // Index 4 -> PatrolBoat
+			// Making an empty player_one board canvas to place boats:
+			player_two.primary = [10][10][3]int{}
+			// Index 0 -> Carrier // (x,y) = (3,3) // Horizontal
+			initBoat(&player_two, [4]int{0, 0, 3, 3})
+			// Index 1 -> Battleship // (x,y) = (4,8) // Horizontal
+			initBoat(&player_two, [4]int{1, 0, 4, 8})
+			// Index 2 -> Destroyer // (x,y) = (2,4) // Vertical
+			initBoat(&player_two, [4]int{2, 1, 2, 4})
+			// Index 3 -> Submarine // (x,y) = (9,0) // Vertical
+			initBoat(&player_two, [4]int{3, 1, 9, 0})
+			// Index 4 -> PatrolBoat // (x,y) = (7,4) // Vertical
+			initBoat(&player_two, [4]int{4, 1, 7, 4})
 
 			fmt.Println("Player 2:")
 			fmt.Print(player_two.PrimaryDisplay())
