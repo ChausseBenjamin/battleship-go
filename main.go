@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/mbndr/figlet4go"
 	tv "github.com/rivo/tview"
 )
 
@@ -22,16 +21,7 @@ func main() {
 
 	if settings.debug {
 
-		ascii := figlet4go.NewAsciiRender()
-
-		options := figlet4go.NewRenderOptions()
-		options.FontName = "TwoPoint"
-
-		// If 'larry3d' wouldn't be included you would have to load your .flf files like that:
-		ascii.LoadFont("./ressources/")
-
-		renderStr, _ := ascii.RenderOpts("Hello Fonts", options)
-		fmt.Print(renderStr)
+		fmt.Println(player_one.PrimarySlice())
 
 		app := tv.NewApplication()
 		flex := tv.NewFlex().

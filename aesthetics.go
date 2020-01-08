@@ -56,6 +56,75 @@ func (plyr player) TargetDisplay() string {
 	return text
 }
 
+// printPrimary displays using ASCII art the primary battleship board
+func (plyr player) PrimarySlice() []string {
+	board := []string{
+		" ",
+		"A",
+		"B",
+		"C",
+		"D",
+		"E",
+		"F",
+		"G",
+		"H",
+		"I",
+		"J",
+	}
+	for i := 0; i < 10; i++ {
+		board = append(board, strconv.Itoa(i))
+		for j := 0; j < 10; j++ {
+			switch plyr.primary[i][j][2] {
+			case 0: // That coordinate was not hit
+				board = append(board, boatchars[1][plyr.primary[i][j][1]])
+			case 1: // That coordinates was hit
+				board = append(board, boatchars[0][plyr.primary[i][j][1]])
+				// default:
+				// 	return errors.New("Unknown State (hit/unhit) at a given coordinate")
+			}
+		}
+	}
+	// fmt.Println(text)
+	return board
+}
+
+func (plyr player) TargetSlice() []string {
+	board := []string{
+		" ",
+		"A",
+		"B",
+		"C",
+		"D",
+		"E",
+		"F",
+		"G",
+		"H",
+		"I",
+		"J",
+	}
+	for i := 0; i < 10; i++ {
+		board = append(board, strconv.Itoa(i))
+		for j := 0; j < 10; j++ {
+			switch plyr.target[i][j][0] {
+			case 0:
+				board = append(board, boatchars[1][0])
+			case 1:
+				if plyr.gains[plyr.prey.primary[i][j][0]] {
+					board = append(board, boatchars[0][plyr.prey.primary[i][j][1]])
+				} else {
+					switch plyr.prey.primary[i][j][0] {
+					case 0:
+						board = append(board, boatchars[0][0])
+					default:
+						board = append(board, mistery_hit)
+					}
+				}
+			}
+		}
+	}
+	return board
+}
+
 // TODO: Function which returns what was hit as a commentary for the hitter
 
 /* Boats Info:
