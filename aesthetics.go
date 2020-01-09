@@ -4,7 +4,22 @@ import (
 	"strconv"
 )
 
-// printPrimary displays using ASCII art the primary battleship board
+// printPrimary displays an ASCII version of the primary battleship board
+// The primary board is the one which belongs to the person calling a hit
+// He sees his own boats on this board.
+// Here is an example
+//   A B C D E F G H I J
+// 0 ~ ~ ~ ~ ~ ~ ~ ~ ~ △
+// 1 ~ ~ ~ ~ ~ ~ ~ ~ ~ ▯
+// 2 ~ ~ ~ ~ ~ ~ ~ ~ ~ ▽
+// 3 ~ ~ ~ ◁ ▭ ▭ ▭ ▷ ~ ~
+// 4 ~ ~ △ ~ ~ ~ ~ △ ~ ~
+// 5 ~ ~ ▯ ~ ~ ~ ~ ▯ ~ ~
+// 6 ~ ~ ▯ ~ ~ ~ ~ ~ ~ ~
+// 7 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 8 ~ ~ ~ ~ ◀ ▬ ▬ ▷ ~ ~
+// 9 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// Only E8, F8, and G8 were hit.
 func (plyr player) PrimaryDisplay() string {
 	text := "\n  A B C D E F G H I J \n"
 	for i := 0; i < 10; i++ {
@@ -27,6 +42,23 @@ func (plyr player) PrimaryDisplay() string {
 	return text
 }
 
+// printTarget displays an ASCII version of the target battleship board
+// The target board is the one which shows a player what he knows about
+// his opponent. This is the board a player would play on.
+// Here is an example
+// A B C D E F G H I J
+// 0 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 1 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 2 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 3 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 4 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 5 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 6 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 7 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 8 ~ ~ ~ ~ ▣ ▣ ▣ ~ ~ ~
+// 9 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// Since the boat in F8, E8, G8 is not sunk, The player does not see
+// it's shape. Upon sinking it, he will be able to see it.
 func (plyr player) TargetDisplay() string {
 	text := "\n  A B C D E F G H I J \n"
 	for i := 0; i < 10; i++ {
