@@ -1,5 +1,8 @@
 package main
 
+// aesthetics.go contains all the functions which
+// display or setup visuals without the use of tview.
+
 import (
 	"strconv"
 )
@@ -20,7 +23,7 @@ import (
 // 8 ~ ~ ~ ~ ◀ ▬ ▬ ▷ ~ ~
 // 9 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // Only E8, F8, and G8 were hit.
-func (plyr player) PrimaryDisplay() string {
+func (plyr player) DisplayPrimary() string {
 	text := "\n  A B C D E F G H I J \n"
 	for i := 0; i < 10; i++ {
 		text += strconv.Itoa(i)
@@ -59,7 +62,7 @@ func (plyr player) PrimaryDisplay() string {
 // 9 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // Since the boat in F8, E8, G8 is not sunk, The player does not see
 // it's shape. Upon sinking it, he will be able to see it.
-func (plyr player) TargetDisplay() string {
+func (plyr player) DisplayTarget() string {
 	text := "\n  A B C D E F G H I J \n"
 	for i := 0; i < 10; i++ {
 		text += strconv.Itoa(i)
@@ -86,75 +89,6 @@ func (plyr player) TargetDisplay() string {
 	}
 	// fmt.Println(text)
 	return text
-}
-
-// printPrimary displays using ASCII art the primary battleship board
-func (plyr player) PrimarySlice() []string {
-	board := []string{
-		" ",
-		"A",
-		"B",
-		"C",
-		"D",
-		"E",
-		"F",
-		"G",
-		"H",
-		"I",
-		"J",
-	}
-	for i := 0; i < 10; i++ {
-		board = append(board, strconv.Itoa(i))
-		for j := 0; j < 10; j++ {
-			switch plyr.primary[i][j][2] {
-			case 0: // That coordinate was not hit
-				board = append(board, boatchars[1][plyr.primary[i][j][1]])
-			case 1: // That coordinates was hit
-				board = append(board, boatchars[0][plyr.primary[i][j][1]])
-				// default:
-				// 	return errors.New("Unknown State (hit/unhit) at a given coordinate")
-			}
-		}
-	}
-	// fmt.Println(text)
-	return board
-}
-
-func (plyr player) TargetSlice() []string {
-	board := []string{
-		" ",
-		"A",
-		"B",
-		"C",
-		"D",
-		"E",
-		"F",
-		"G",
-		"H",
-		"I",
-		"J",
-	}
-	for i := 0; i < 10; i++ {
-		board = append(board, strconv.Itoa(i))
-		for j := 0; j < 10; j++ {
-			switch plyr.target[i][j][0] {
-			case 0:
-				board = append(board, boatchars[1][0])
-			case 1:
-				if plyr.gains[plyr.prey.primary[i][j][0]] {
-					board = append(board, boatchars[0][plyr.prey.primary[i][j][1]])
-				} else {
-					switch plyr.prey.primary[i][j][0] {
-					case 0:
-						board = append(board, boatchars[0][0])
-					default:
-						board = append(board, mistery_hit)
-					}
-				}
-			}
-		}
-	}
-	return board
 }
 
 // TODO: Function which returns what was hit as a commentary for the hitter

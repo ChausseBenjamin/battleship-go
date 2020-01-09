@@ -55,6 +55,7 @@ var boatlist = [5][2][5]int{
 // target stores info the player knows about the ennemy.
 // gains keeps track of the ships the player has managed to sink.
 type player struct {
+	name    string
 	primary [10][10][3]int
 	// Primary Boat Tile Vector
 	//  [y][x][boatID, position, hitStatus]int
