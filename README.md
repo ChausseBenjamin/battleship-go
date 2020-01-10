@@ -11,12 +11,12 @@ in a sexy terminal interface.
 
 ## Goals
 
-- [  ] Know Go better
-- [  ] Make a multiplayer game which can be played on a single computer
-- [  ] Have a clean, simple, and easy to use interface
+- [ ] Know Go better
+- [ ] Make a multiplayer game which can be played on a single computer
+- [ ] Have a clean, simple, and easy to use interface
 
 ## Strech goals
 
-- [  ] Allow the game to be played v.s. a computer algorithm
-- [  ] Allow the game to be played on two different computers using SSH
+- [ ] Allow the game to be played v.s. a computer algorithm
+- [ ] Allow the game to be played on two different computers using SSH
 
