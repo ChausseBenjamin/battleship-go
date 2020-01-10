@@ -67,8 +67,10 @@ func main() {
 		playerOne.Hit(9, 2) // (I,2)
 
 		// Display both primary boards in stdout
-		fmt.Println("Player One:", playerOne.DisplayPrimary())
-		fmt.Println("Player Two:", playerTwo.DisplayPrimary())
+		fmt.Println("Player One (vue de ses propres pièces):", playerOne.DisplayPrimary())
+		fmt.Println("Player Two (vue de ses propres pièces):", playerTwo.DisplayPrimary())
+		fmt.Println("Player One (vue des pièces de son ennemi):", playerOne.DisplayTarget())
+		fmt.Println("Player Two (vue des pièces de son ennemi):", playerTwo.DisplayTarget())
 
 		/* TVIEW UI SETUP:
 		┌------------------------------------------------------┐
