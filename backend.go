@@ -90,10 +90,22 @@ type player struct {
 	prey *player
 }
 
+func (plyr *player) InitBoard(opponent *player) {
+	plyr.prey = opponent
+
+	for i := 0; i < 10; i++ {
+		for j := 0; j < 10; j++ {
+			plyr.primary[i][j] = [3]int{6, 0, 0}
+			plyr.target[i][j] = [2]int{0, 6}
+
+		}
+	}
+}
+
 // initBoat places a boat on a players primary grid.
 // boat sizes are defined by the boatlist variable.
 // Consult it for more info.
-func (plyr *player) initBoat(boatID, orientation, x, y int) {
+func (plyr *player) InitBoat(boatID, orientation, x, y int) {
 	boat_length := len(boatlist[boatID][0])
 	if orientation == 0 { // Boat is HORIZONTAL
 		for i := 0; i < boat_length; i++ {
@@ -121,9 +133,11 @@ func (plyr *player) initBoat(boatID, orientation, x, y int) {
 
 func (plyr *player) Hit(x, y int) bool {
 	plyr.prey.primary[y][x][2] = 1
+	// We change the coord status to hit and add the id of
+	// the boat since we know it now.
 	plyr.target[y][x] = [2]int{1, plyr.prey.primary[y][x][0]}
 
-	if BoatID := plyr.prey.primary[y][x][0]; BoatID > 0 {
+	if BoatID := plyr.prey.primary[y][x][0]; BoatID < 6 {
 		switch plyr.prey.primary[y][x][1] {
 		case 1, 2, 5: // If the hit boat was vertical
 			// We suppose the boat is sunk since it only takes one unhit coordinate to prove this wrong

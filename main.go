@@ -15,34 +15,34 @@ func main() {
 	var playerOne = player{name: "Ben"}
 	var playerTwo = player{name: "Hugo"}
 	// Setting up prey for when using Hit function
-	playerOne.prey = &playerTwo
-	playerTwo.prey = &playerOne
+	playerOne.InitBoard(&playerTwo)
+	playerTwo.InitBoard(&playerOne)
 
 	if settings.debug {
 
 		// PLACING PLAYER ONE BOATS:
 		// Carrier: (ID=0), horizontal, (1,1)
-		playerOne.initBoat(0, horizontal, 1, 1)
+		playerOne.InitBoat(0, horizontal, 1, 1)
 		// Battleship: (ID=1), horizontal, (0,9)
-		playerOne.initBoat(1, horizontal, 0, 9)
+		playerOne.InitBoat(1, horizontal, 0, 9)
 		// Destroyer: (ID=2), vertical, (5,6)
-		playerOne.initBoat(2, vertical, 5, 6)
+		playerOne.InitBoat(2, vertical, 5, 6)
 		// Submarine: (ID=3), horizontal, (6,2)
-		playerOne.initBoat(3, horizontal, 6, 2)
+		playerOne.InitBoat(3, horizontal, 6, 2)
 		// Patrol Boat: (ID=4), vertical, (1,5)
-		playerOne.initBoat(4, vertical, 1, 5)
+		playerOne.InitBoat(4, vertical, 1, 5)
 
 		// PLACING PLAYER TWO BOATS:
 		// Carrier: (ID=0), vertical, (9,0)
-		playerTwo.initBoat(0, vertical, 9, 0)
+		playerTwo.InitBoat(0, vertical, 9, 0)
 		// Battleship: (ID=1), horizontal, (1,8)
-		playerTwo.initBoat(1, horizontal, 1, 8)
+		playerTwo.InitBoat(1, horizontal, 1, 8)
 		// Destroyer: (ID=2), vertical, (5,3)
-		playerTwo.initBoat(2, vertical, 5, 3)
+		playerTwo.InitBoat(2, vertical, 5, 3)
 		// Submarine: (ID=3), horizontal, (2,2)
-		playerTwo.initBoat(3, horizontal, 2, 2)
+		playerTwo.InitBoat(3, horizontal, 2, 2)
 		// Patrol Boat: (ID=4), vertical, (7,6)
-		playerTwo.initBoat(4, vertical, 6, 6)
+		playerTwo.InitBoat(4, vertical, 6, 6)
 
 		// HITTING PLAYER ONE AT DIFFERENT COORDINATES
 		playerTwo.Hit(5, 6) // (F,6)
@@ -65,5 +65,10 @@ func main() {
 		// Display both primary boards in stdout
 		fmt.Println("Player One (Primary):", playerOne.DisplayPrimary())
 		fmt.Println("Player Two (Primary):", playerTwo.DisplayPrimary())
+
+		// Display both primary boards in stdout
+		fmt.Println("Player One (Target):", playerOne.DisplayTarget())
+		fmt.Println("Player Two (Target):", playerTwo.DisplayTarget())
+
 	}
 }
