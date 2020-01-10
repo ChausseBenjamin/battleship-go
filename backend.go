@@ -93,11 +93,9 @@ type player struct {
 // initBoat places a boat on a players primary grid.
 // boat sizes are defined by the boatlist variable.
 // Consult it for more info.
-func initBoat(plyr *player, boat [4]int) {
-	boatID := boat[0]
+func (plyr *player) initBoat(boatID, orientation, x, y int) {
 	boat_length := len(boatlist[boatID][0])
-	x, y := boat[2], boat[3]
-	if boat[1] == 0 { // Boat is HORIZONTAL
+	if orientation == 0 { // Boat is HORIZONTAL
 		for i := 0; i < boat_length; i++ {
 			char := boatlist[boatID][0][i]
 			if char == 0 { // Compensating for boatlist having
@@ -121,8 +119,7 @@ func initBoat(plyr *player, boat [4]int) {
 	}
 }
 
-func (plyr *player) Hit(coord [2]int) bool {
-	x, y := coord[0], coord[1]
+func (plyr *player) Hit(x, y int) bool {
 	plyr.prey.primary[y][x][2] = 1
 	plyr.target[y][x] = [2]int{1, plyr.prey.primary[y][x][0]}
 
@@ -162,3 +159,6 @@ func (plyr *player) Hit(coord [2]int) bool {
 		return false // Returns false if water was hit
 	}
 }
+
+const horizontal = 0
+const vertical = 1
