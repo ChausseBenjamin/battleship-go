@@ -69,17 +69,21 @@ func (plyr player) DisplayTarget() string {
 		text += " "
 		for j := 0; j < 10; j++ {
 			switch plyr.target[i][j][0] {
-			case 0:
+			case 0: // The coordinate is not hit
+				// Display "~" as we don't know what's there
 				text += boatchars[1][0]
-			case 1:
+			case 1: // The coordinate WAS hit
+				// If the boat ID of the coordinate coresponds with one that sunk,
+				// then display the boat without sensoring it.
 				if plyr.gains[plyr.prey.primary[i][j][0]] {
 					text += boatchars[0][plyr.prey.primary[i][j][1]]
 				} else {
 					switch plyr.prey.primary[i][j][0] {
-					case 0:
+					// Otherwise, check if the coordinate contains water (n+1)
+					case 6:
 						text += boatchars[0][0]
-					default:
-						text += mistery_hit
+					default: // Censor the tile if it contains a boat
+						text += misteryHit
 					}
 				}
 			}
@@ -88,6 +92,47 @@ func (plyr player) DisplayTarget() string {
 		text += "\n"
 	}
 	// fmt.Println(text)
+	return text
+}
+
+func (plyr *player) DisplayTarget2() string {
+	text := "\n  A B C D E F G H I J \n"
+	for r := 0; r < 10; r++ {
+		text += strconv.Itoa(r)
+		for c := 0; c < 10; c++ {
+			text += " "
+			// First thing: is the coordinate hit or not?
+			switch plyr.target[r][c][0] {
+			// The coordinate is NOT hit:
+			case 0:
+				// Add the `~` symbol
+				text += boatchars[1][0]
+			// If the coordinate is NOT hit:
+			default:
+				// Is the coordinate water?
+				switch plyr.prey.primary[r][c][0] {
+				// It IS water:
+				case 6:
+					// Add the `◌` symbol
+					text += boatchars[0][0]
+				// It's NOT water:
+				default:
+					// Is the ID of the boat at that coordinate marked as a gain?
+					switch plyr.gains[plyr.prey.primary[r][c][0]] {
+					// It IS marked as a gain:
+					case true:
+						// Show the boat as it's meant to be:
+						// (hit boatchars: with `position` marked in the opponents primary)
+						text += boatchars[0][plyr.prey.primary[r][c][1]]
+					default:
+						// Nope, you're getting a censored tile: `▣`
+						text += misteryHit
+					}
+				}
+			}
+		}
+		text += "\n"
+	}
 	return text
 }
 
@@ -110,4 +155,4 @@ var boatchars = [2][7]string{
 
 // This constant keeps information about boats that aren't totally sunk secret.
 // It therefore substitues the shape of a boat on the target board when it is unsunk.
-const mistery_hit = `▣`
+const misteryHit = `▣`

@@ -5,9 +5,9 @@ import (
 )
 
 type parameters struct {
-	vs_cpu   bool
-	ssh_game bool
-	debug    bool
+	vsCPU   bool
+	sshGame bool
+	debug   bool
 }
 
 type userError struct {
@@ -106,9 +106,9 @@ func (plyr *player) InitBoard(opponent *player) {
 // boat sizes are defined by the boatlist variable.
 // Consult it for more info.
 func (plyr *player) InitBoat(boatID, orientation, x, y int) {
-	boat_length := len(boatlist[boatID][0])
+	boatLength := len(boatlist[boatID][0])
 	if orientation == 0 { // Boat is HORIZONTAL
-		for i := 0; i < boat_length; i++ {
+		for i := 0; i < boatLength; i++ {
 			char := boatlist[boatID][0][i]
 			if char == 0 { // Compensating for boatlist having
 				break //      zeros at the end of slices
@@ -119,7 +119,7 @@ func (plyr *player) InitBoat(boatID, orientation, x, y int) {
 			x++ // HORIZONTAL: Therefore the loop increments the x axis
 		}
 	} else { // Boat is VERTICAL
-		for i := 0; i < boat_length; i++ {
+		for i := 0; i < boatLength; i++ {
 			char := boatlist[boatID][1][i]
 			if char == 0 {
 				break
@@ -136,7 +136,6 @@ func (plyr *player) Hit(x, y int) bool {
 	// We change the coord status to hit and add the id of
 	// the boat since we know it now.
 	plyr.target[y][x] = [2]int{1, plyr.prey.primary[y][x][0]}
-
 	if BoatID := plyr.prey.primary[y][x][0]; BoatID < 6 {
 		switch plyr.prey.primary[y][x][1] {
 		case 1, 2, 5: // If the hit boat was vertical

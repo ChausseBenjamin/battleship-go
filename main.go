@@ -7,8 +7,8 @@ import (
 func main() {
 
 	settings := parameters{
-		debug:    true,
-		ssh_game: false,
+		debug:   true,
+		sshGame: false,
 	}
 
 	// SETUP:
@@ -67,8 +67,8 @@ func main() {
 		fmt.Println("Player Two (Primary):", playerTwo.DisplayPrimary())
 
 		// Display both primary boards in stdout
-		fmt.Println("Player One (Target):", playerOne.DisplayTarget())
-		fmt.Println("Player Two (Target):", playerTwo.DisplayTarget())
+		fmt.Println("Player One (Target):", playerOne.DisplayTarget2())
+		fmt.Println("Player Two (Target):", playerTwo.DisplayTarget2())
 
 	}
 }
