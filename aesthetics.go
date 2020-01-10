@@ -1,11 +1,29 @@
 package main
 
+// aesthetics.go contains all the functions which
+// display or setup visuals without the use of tview.
+
 import (
 	"strconv"
 )
 
-// printPrimary displays using ASCII art the primary battleship board
-func (plyr player) PrimaryDisplay() string {
+// printPrimary displays an ASCII version of the primary battleship board
+// The primary board is the one which belongs to the person calling a hit
+// He sees his own boats on this board.
+// Here is an example
+//   A B C D E F G H I J
+// 0 ~ ~ ~ ~ ~ ~ ~ ~ ~ △
+// 1 ~ ~ ~ ~ ~ ~ ~ ~ ~ ▯
+// 2 ~ ~ ~ ~ ~ ~ ~ ~ ~ ▽
+// 3 ~ ~ ~ ◁ ▭ ▭ ▭ ▷ ~ ~
+// 4 ~ ~ △ ~ ~ ~ ~ △ ~ ~
+// 5 ~ ~ ▯ ~ ~ ~ ~ ▯ ~ ~
+// 6 ~ ~ ▯ ~ ~ ~ ~ ~ ~ ~
+// 7 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 8 ~ ~ ~ ~ ◀ ▬ ▬ ▷ ~ ~
+// 9 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// Only E8, F8, and G8 were hit.
+func (plyr player) DisplayPrimary() string {
 	text := "\n  A B C D E F G H I J \n"
 	for i := 0; i < 10; i++ {
 		text += strconv.Itoa(i)
@@ -27,7 +45,24 @@ func (plyr player) PrimaryDisplay() string {
 	return text
 }
 
-func (plyr player) TargetDisplay() string {
+// printTarget displays an ASCII version of the target battleship board
+// The target board is the one which shows a player what he knows about
+// his opponent. This is the board a player would play on.
+// Here is an example
+// A B C D E F G H I J
+// 0 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 1 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 2 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 3 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 4 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 5 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 6 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 7 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// 8 ~ ~ ~ ~ ▣ ▣ ▣ ~ ~ ~
+// 9 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// Since the boat in F8, E8, G8 is not sunk, The player does not see
+// it's shape. Upon sinking it, he will be able to see it.
+func (plyr player) DisplayTarget() string {
 	text := "\n  A B C D E F G H I J \n"
 	for i := 0; i < 10; i++ {
 		text += strconv.Itoa(i)

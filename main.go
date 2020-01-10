@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	tc "github.com/gdamore/tcell"
+	tv "github.com/rivo/tview"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -11,77 +15,59 @@ func main() {
 		ssh_game: false,
 	}
 
+	// SETUP:
+	var playerOne = player{name: "Ben"}
+	var playerTwo = player{name: "Hugo"}
+	// Setting up prey for when using Hit function
+	playerOne.prey = &playerTwo
+	playerTwo.prey = &playerOne
+
 	if settings.debug {
 
-		// SETUP:
-		var player_one = player{}
-		var player_two = player{}
-		// Setting up prey for when using Hit function
-		player_one.prey = &player_two
-		player_two.prey = &player_one
+		// PLACING PLAYER ONE BOATS:
+		// Carrier: (ID=0), horizontal, (1,1)
+		playerOne.initBoat(0, horizontal, 1, 1)
+		// Battleship: (ID=1), horizontal, (0,9)
+		playerOne.initBoat(1, horizontal, 0, 9)
+		// Destroyer: (ID=2), vertical, (5,6)
+		playerOne.initBoat(2, vertical, 5, 6)
+		// Submarine: (ID=3), horizontal, (6,2)
+		playerOne.initBoat(3, horizontal, 6, 2)
+		// Patrol Boat: (ID=4), vertical, (1,5)
+		playerOne.initBoat(4, vertical, 1, 5)
 
-		if settings.debug {
-			fmt.Println("# #---TESTING SEQUENCE---# #")
+		// PLACING PLAYER TWO BOATS:
+		// Carrier: (ID=0), vertical, (9,0)
+		playerTwo.initBoat(0, vertical, 9, 0)
+		// Battleship: (ID=1), horizontal, (1,8)
+		playerTwo.initBoat(1, horizontal, 1, 8)
+		// Destroyer: (ID=2), vertical, (5,3)
+		playerTwo.initBoat(2, vertical, 5, 3)
+		// Submarine: (ID=3), horizontal, (2,2)
+		playerTwo.initBoat(3, horizontal, 2, 2)
+		// Patrol Boat: (ID=4), vertical, (7,6)
+		playerTwo.initBoat(4, vertical, 6, 6)
 
-			// Making an empty player_one board canvas to place boats:
-			player_one.primary = [10][10][3]int{}
-			// Index 0 -> Carrier // (x,y) = (0,0) // Horizontal:
-			initBoat(&player_one, [4]int{0, 0, 0, 0})
-			// Index 1 -> Battleship // (x,y) = (6,9) // Horizontal:
-			initBoat(&player_one, [4]int{1, 0, 6, 9})
-			// Index 2 -> Destroyer // (x,y) = (4,3) // Vertical:
-			initBoat(&player_one, [4]int{2, 1, 4, 3})
-			// Index 3 -> Submarine // (x,y) = (7,1) // Vertical:
-			initBoat(&player_one, [4]int{3, 1, 7, 1})
-			// Index 4 -> PatrolBoat // (x,y) = (1,8) // Vertical:
-			initBoat(&player_one, [4]int{4, 1, 1, 8})
+		// HITTING PLAYER ONE AT DIFFERENT COORDINATES
+		playerTwo.Hit(5, 6) // (F,6)
+		playerTwo.Hit(5, 7) // (F,7)
+		playerTwo.Hit(5, 8) // (F,8)
+		playerTwo.Hit(3, 4) // (D,4)
+		playerTwo.Hit(3, 9) // (D,9)
+		playerTwo.Hit(6, 6) // (G,6)
+		playerTwo.Hit(2, 9) // (C,9)
 
-			// Making an empty player_one board canvas to place boats:
-			player_two.primary = [10][10][3]int{}
-			// Index 0 -> Carrier // (x,y) = (3,3) // Horizontal
-			initBoat(&player_two, [4]int{0, 0, 3, 3})
-			// Index 1 -> Battleship // (x,y) = (4,8) // Horizontal
-			initBoat(&player_two, [4]int{1, 0, 4, 8})
-			// Index 2 -> Destroyer // (x,y) = (2,4) // Vertical
-			initBoat(&player_two, [4]int{2, 1, 2, 4})
-			// Index 3 -> Submarine // (x,y) = (9,0) // Vertical
-			initBoat(&player_two, [4]int{3, 1, 9, 0})
-			// Index 4 -> PatrolBoat // (x,y) = (7,4) // Vertical
-			initBoat(&player_two, [4]int{4, 1, 7, 4})
+		// HITTING PLAYER TWO AT DIFFERENT COORDINATES
+		playerOne.Hit(1, 4) // (B,4)
+		playerOne.Hit(1, 8) // (B,8)
+		playerOne.Hit(2, 7) // (C,7)
+		playerOne.Hit(2, 8) // (C,8)
+		playerOne.Hit(3, 8) // (D,8)
+		playerOne.Hit(4, 8) // (E,8)
+		playerOne.Hit(9, 2) // (I,2)
 
-			fmt.Println("Player 2:")
-			fmt.Print(player_two.PrimaryDisplay())
-
-			// fmt.Println("Hit B2:")
-			// hit_coord := [2]int{1, 2} // Water hit at B2
-			// fmt.Print("There was a boat: ")
-			// fmt.Println(player_one.Hit(hit_coord))
-			// fmt.Println(player_two.PrimaryDisplay())
-			// fmt.Println("Hit H4:")
-			// hit_coord = [2]int{7, 4} // PatrolBoat hit at H4
-			// fmt.Print("There was a boat: ")
-			// fmt.Println(player_one.Hit(hit_coord))
-			// fmt.Println(player_two.PrimaryDisplay())
-			// fmt.Println("Player 1 TargetDisplay:")
-			// fmt.Println(player_one.TargetDisplay())
-			// fmt.Println("Hit H5:")
-			// hit_coord = [2]int{7, 5} // PatrolBoat hit at H4
-			// fmt.Print("There was a boat: ")
-			// fmt.Println(player_one.Hit(hit_coord))
-			// fmt.Println(player_two.PrimaryDisplay())
-			// fmt.Println("Player 1 TargetDisplay:")
-			// fmt.Println(player_one.TargetDisplay())
-
-			fmt.Println("Hit: E8, F8, G8")
-			player_one.Hit([2]int{4, 8})
-			player_one.Hit([2]int{5, 8})
-			player_one.Hit([2]int{6, 8})
-			fmt.Println(player_two.PrimaryDisplay())
-			fmt.Println(player_one.TargetDisplay())
-			player_one.Hit([2]int{6, 8})
-			fmt.Println(player_two.PrimaryDisplay())
-			fmt.Println(player_one.TargetDisplay())
-
-		}
+		// Display both primary boards in stdout
+		fmt.Println("Player One (Primary):", playerOne.DisplayPrimary())
+		fmt.Println("Player Two (Primary):", playerTwo.DisplayPrimary())
 	}
 }
