@@ -2,10 +2,6 @@ package main
 
 import (
 	"fmt"
-	tc "github.com/gdamore/tcell"
-	tv "github.com/rivo/tview"
-	"strconv"
-	"strings"
 )
 
 func main() {
