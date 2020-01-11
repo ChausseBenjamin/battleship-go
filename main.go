@@ -11,42 +11,42 @@ import (
 func main() {
 
 	settings := parameters{
-		debug:    true,
-		ssh_game: false,
+		debug:   true,
+		sshGame: false,
 	}
 
 	// SETUP:
 	var playerOne = player{name: "Ben"}
 	var playerTwo = player{name: "Hugo"}
 	// Setting up prey for when using Hit function
-	playerOne.prey = &playerTwo
-	playerTwo.prey = &playerOne
+	playerOne.InitBoard(&playerTwo)
+	playerTwo.InitBoard(&playerOne)
 
 	if settings.debug {
 
 		// PLACING PLAYER ONE BOATS:
 		// Carrier: (ID=0), horizontal, (1,1)
-		playerOne.initBoat(0, horizontal, 1, 1)
+		playerOne.InitBoat(0, horizontal, 1, 1)
 		// Battleship: (ID=1), horizontal, (0,9)
-		playerOne.initBoat(1, horizontal, 0, 9)
+		playerOne.InitBoat(1, horizontal, 0, 9)
 		// Destroyer: (ID=2), vertical, (5,6)
-		playerOne.initBoat(2, vertical, 5, 6)
+		playerOne.InitBoat(2, vertical, 5, 6)
 		// Submarine: (ID=3), horizontal, (6,2)
-		playerOne.initBoat(3, horizontal, 6, 2)
+		playerOne.InitBoat(3, horizontal, 6, 2)
 		// Patrol Boat: (ID=4), vertical, (1,5)
-		playerOne.initBoat(4, vertical, 1, 5)
+		playerOne.InitBoat(4, vertical, 1, 5)
 
 		// PLACING PLAYER TWO BOATS:
 		// Carrier: (ID=0), vertical, (9,0)
-		playerTwo.initBoat(0, vertical, 9, 0)
+		playerTwo.InitBoat(0, vertical, 9, 0)
 		// Battleship: (ID=1), horizontal, (1,8)
-		playerTwo.initBoat(1, horizontal, 1, 8)
+		playerTwo.InitBoat(1, horizontal, 1, 8)
 		// Destroyer: (ID=2), vertical, (5,3)
-		playerTwo.initBoat(2, vertical, 5, 3)
+		playerTwo.InitBoat(2, vertical, 5, 3)
 		// Submarine: (ID=3), horizontal, (2,2)
-		playerTwo.initBoat(3, horizontal, 2, 2)
+		playerTwo.InitBoat(3, horizontal, 2, 2)
 		// Patrol Boat: (ID=4), vertical, (7,6)
-		playerTwo.initBoat(4, vertical, 6, 6)
+		playerTwo.InitBoat(4, vertical, 6, 6)
 
 		// HITTING PLAYER ONE AT DIFFERENT COORDINATES
 		playerTwo.Hit(5, 6) // (F,6)
@@ -241,24 +241,42 @@ func main() {
 
 func RedrawTarget(plyr *player, table *tv.Table) {
 	// generating slice string for the table:
+	// We initialize a slice containing all the cells
+	// The first row will be the label of the columns
 	boardData := strings.Split("  /A/B/C/D/E/F/G/H/I/J", "/")
-	for i := 0; i < 10; i++ {
-		str := " " + strconv.Itoa(i)
+	// For every row (r)
+	for r := 0; r < 10; r++ {
+		// Each row starts with the row label/number
+		// A space makes the table centered by indenting it...
+		str := " " + strconv.Itoa(r)
 		boardData = append(boardData, str)
-		for j := 0; j < 10; j++ {
-			switch plyr.target[i][j][0] {
-			case 0: // Tile is unhit (water since we don't know)
+		for c := 0; c < 10; c++ {
+			// First thing: is the coordinate hit or not?
+			switch plyr.target[r][c][0] {
+			// The coordinate is NOT hit:
+			case 0:
+				// Add the `~` symbol
 				boardData = append(boardData, boatchars[1][0])
-			case 1: // Tile has already been hit
-				if plyr.gains[plyr.prey.primary[i][j][0]] { // Boat is sunk:
-					// Boat ID at that coordinate coresponds to ID of a sunk boat
-					boardData = append(boardData, boatchars[0][plyr.prey.primary[i][j][1]])
-				} else {
-					switch plyr.prey.primary[i][j][0] {
-					case 6:
-						boardData = append(boardData, boatchars[0][0])
+			// If the coordinate is NOT hit:
+			default:
+				// Is the coordinate water?
+				switch plyr.prey.primary[r][c][0] {
+				// It IS water:
+				case 6:
+					// Add the `◌` symbol
+					boardData = append(boardData, boatchars[0][0])
+				// It's NOT water:
+				default:
+					// Is the ID of the boat at that coordinate marked as a gain?
+					switch plyr.gains[plyr.prey.primary[r][c][0]] {
+					// It IS marked as a gain:
+					case true:
+						// Show the boat as it's meant to be:
+						// (hit boatchars: with `position` marked in the opponents primary)
+						boardData = append(boardData, boatchars[0][plyr.prey.primary[r][c][1]])
 					default:
-						boardData = append(boardData, mistery_hit)
+						// Nope, you're getting a censored tile: `▣`
+						boardData = append(boardData, misteryHit)
 					}
 				}
 			}

@@ -45,49 +45,49 @@ func (plyr player) DisplayPrimary() string {
 	return text
 }
 
-// printTarget displays an ASCII version of the target battleship board
-// The target board is the one which shows a player what he knows about
-// his opponent. This is the board a player would play on.
-// Here is an example
-// A B C D E F G H I J
-// 0 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// 1 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// 2 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// 3 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// 4 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// 5 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// 6 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// 7 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// 8 ~ ~ ~ ~ ▣ ▣ ▣ ~ ~ ~
-// 9 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// Since the boat in F8, E8, G8 is not sunk, The player does not see
-// it's shape. Upon sinking it, he will be able to see it.
-func (plyr player) DisplayTarget() string {
+func (plyr *player) DisplayTarget() string {
+	// First row labelling the columns
 	text := "\n  A B C D E F G H I J \n"
-	for i := 0; i < 10; i++ {
-		text += strconv.Itoa(i)
-		text += " "
-		for j := 0; j < 10; j++ {
-			switch plyr.target[i][j][0] {
+	// For every row (r)
+	for r := 0; r < 10; r++ {
+		// Add the row number at the start of each line
+		text += strconv.Itoa(r)
+		// For every column (c)
+		for c := 0; c < 10; c++ {
+			// Separate each character with a space
+			text += " "
+			// First thing: is the coordinate hit or not?
+			switch plyr.target[r][c][0] {
+			// The coordinate is NOT hit:
 			case 0:
+				// Add the `~` symbol
 				text += boatchars[1][0]
-			case 1:
-				if plyr.gains[plyr.prey.primary[i][j][0]] {
-					text += boatchars[0][plyr.prey.primary[i][j][1]]
-				} else {
-					switch plyr.prey.primary[i][j][0] {
-					case 0:
-						text += boatchars[0][0]
+			// If the coordinate is NOT hit:
+			default:
+				// Is the coordinate water?
+				switch plyr.prey.primary[r][c][0] {
+				// It IS water:
+				case 6:
+					// Add the `◌` symbol
+					text += boatchars[0][0]
+				// It's NOT water:
+				default:
+					// Is the ID of the boat at that coordinate marked as a gain?
+					switch plyr.gains[plyr.prey.primary[r][c][0]] {
+					// It IS marked as a gain:
+					case true:
+						// Show the boat as it's meant to be:
+						// (hit boatchars: with `position` marked in the opponents primary)
+						text += boatchars[0][plyr.prey.primary[r][c][1]]
 					default:
-						text += mistery_hit
+						// Nope, you're getting a censored tile: `▣`
+						text += misteryHit
 					}
 				}
 			}
-			text += " "
 		}
 		text += "\n"
 	}
-	// fmt.Println(text)
 	return text
 }
 
@@ -110,4 +110,4 @@ var boatchars = [2][7]string{
 
 // This constant keeps information about boats that aren't totally sunk secret.
 // It therefore substitues the shape of a boat on the target board when it is unsunk.
-const mistery_hit = `▣`
+const misteryHit = `▣`
