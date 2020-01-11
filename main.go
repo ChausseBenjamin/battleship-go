@@ -286,12 +286,12 @@ func RedrawTarget(plyr *player, table *tv.Table) {
 	table.Clear()
 	for r := 0; r < 11; r++ {
 		for c := 0; c < 11; c++ {
-			color, selectable := tc.ColorDarkBlue, true
+			color, selectable := tc.ColorDarkCyan, true
 			if r < 1 || c < 1 {
 				color, selectable = tc.ColorPurple, false
 			}
-			if boardData[r*11+c] != `~` {
-				selectable = false
+			if boardData[r*11+c] != `~` && !(r < 1 || c < 1) {
+				selectable, color = false, tc.ColorRed
 			}
 			table.SetCell(r, c,
 				tv.NewTableCell(boardData[r*11+c]).
