@@ -75,7 +75,6 @@ type player struct {
 	//  - HitStatus:
 	//  	0: Unhit
 	//  	1: Hit
-	//
 	target [10][10][2]int
 	// Target Boat Tile Vector
 	// [ hit, id ]
@@ -91,12 +90,12 @@ type player struct {
 }
 
 func (plyr *player) InitBoard(opponent *player) {
+	// Sets the players' opponent
 	plyr.prey = opponent
-
-	for i := 0; i < 10; i++ {
-		for j := 0; j < 10; j++ {
-			plyr.primary[i][j] = [3]int{6, 0, 0}
-			plyr.target[i][j] = [2]int{0, 6}
+	for r := 0; r < 10; r++ {
+		for c := 0; c < 10; c++ {
+			plyr.primary[r][c] = [3]int{6, 0, 0}
+			plyr.target[r][c] = [2]int{0, 6}
 
 		}
 	}

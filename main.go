@@ -188,11 +188,18 @@ func main() {
 					// TODO: change this for a dopdown prompt "Are you sure? (Y/N)"
 					app.Stop()
 				}
+				if key == tc.KeyEnter {
+					x, y := targetBox.GetSelection()
+					fmt.Println("X:", x)
+					fmt.Println("Y:", y)
+				}
 			}).
 			SetBorder(true).
 			SetTitle("The enemy:")
 
-		primaryBox := tv.NewTable().
+		primaryBox := tv.NewTable()
+		RedrawPrimary(&playerOne, primaryBox)
+		primaryBox.SetFixed(1, 1).
 			SetBorder(true).
 			SetTitle("You:")
 
@@ -250,6 +257,7 @@ func RedrawTarget(plyr *player, table *tv.Table) {
 		// A space makes the table centered by indenting it...
 		str := " " + strconv.Itoa(r)
 		boardData = append(boardData, str)
+		// For every column (c)
 		for c := 0; c < 10; c++ {
 			// First thing: is the coordinate hit or not?
 			switch plyr.target[r][c][0] {
@@ -282,7 +290,6 @@ func RedrawTarget(plyr *player, table *tv.Table) {
 			}
 		}
 	}
-
 	table.Clear()
 	for r := 0; r < 11; r++ {
 		for c := 0; c < 11; c++ {
@@ -298,6 +305,51 @@ func RedrawTarget(plyr *player, table *tv.Table) {
 					SetTextColor(color).
 					SetAlign(tv.AlignCenter).
 					SetSelectable(selectable))
+		}
+	}
+}
+
+func RedrawPrimary(plyr *player, table *tv.Table) {
+	// generating slice string for the table:
+	// We initialize a slice containing all the cells
+	// The first row will be the label of the columns
+	boardData := strings.Split("  /A/B/C/D/E/F/G/H/I/J", "/")
+	// For every row (r)
+	for r := 0; r < 10; r++ {
+		// Each row starts with the row label/number
+		// A space makes the table centered by indenting it...
+		str := " " + strconv.Itoa(r)
+		boardData = append(boardData, str)
+		// For every column (c)
+		for c := 0; c < 10; c++ {
+			// Is the coordinate hit or not?
+			switch plyr.primary[r][c][2] {
+			// It is NOT
+			case 0:
+				// boatchars selects is character from the not-hit slice
+				boardData = append(boardData, boatchars[1][plyr.primary[r][c][1]])
+			// It IS
+			case 1:
+				// boatchars selects is character from the hit slice
+				boardData = append(boardData, boatchars[0][plyr.primary[r][c][1]])
+			}
+		}
+	}
+	table.Clear()
+	for r := 0; r < 11; r++ {
+		for c := 0; c < 11; c++ {
+			color := tc.ColorDarkCyan
+			if r < 1 || c < 1 {
+				color = tc.ColorPurple
+			}
+			if boardData[r*11+c] != `~` && !(r < 1 || c < 1) {
+				color = tc.ColorRed
+			}
+			table.SetCell(r, c,
+				tv.NewTableCell(boardData[r*11+c]).
+					SetTextColor(color).
+					SetSelectable(false).
+					SetAlign(tv.AlignCenter))
 		}
 	}
 }
