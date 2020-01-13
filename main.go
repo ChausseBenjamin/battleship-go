@@ -4,8 +4,6 @@ import (
 	"fmt"
 	tc "github.com/gdamore/tcell"
 	tv "github.com/rivo/tview"
-	"strconv"
-	"strings"
 )
 
 func main() {
@@ -17,7 +15,7 @@ func main() {
 
 	// SETUP:
 	var playerOne = player{name: "Ben"}
-	var playerTwo = player{name: "Hugo"}
+	var playerTwo = player{name: "Phil"}
 	// Setting up prey for when using Hit function
 	playerOne.InitBoard(&playerTwo)
 	playerTwo.InitBoard(&playerOne)
@@ -134,83 +132,80 @@ func main() {
 				- lossesBox
 		- Direction: columns
 
-		HEADERBOX:
-			box which displays in it's title the current player.
-
-		KEYBINDINGSBOX:
-			simple box containing a list of all the keybindings one can use.
-
-		LOGBOX:
-			box which shows a log of the past moves each player made.
-
 		TARGETBOX:
 			box containing the board where the player attacks his opponent
 			this box is focused by default and is of type table as it can be navigated.
-
-		GAINSBOX:
-			box showing the names of all the ennemies boats which are sunk.
-			each sunk boat has a small display of the boat going with it.
-
-		PRIMARYBOX:
-			box containing the board showing the players boat layout.
-
-		LOSSESBOX:
-			box showing the names of all the players boats which are sunk.
-			each sunk boat has a small display of the boat going with it.
-
-		COMMANDBOX:
-			box containing an input field which is to be used as a command prompt.
-			coordinates can be inputed directly and typing quit will exit the game.
 
 		*/
 
 		// Initializing the application
 		app := tv.NewApplication()
 
+		// HEADERBOX:
+		// 	box which displays in it's title the current player.
 		headerBox := tv.NewBox().SetTitle(playerOne.name).
 			SetBorder(true)
 
-		keybindingsBox := tv.NewBox().
-			SetTitle("Keybindings:").
-			SetBorder(true)
-		// TODO: Add text/documentation to box
-
-		logBox := tv.NewBox().
-			SetTitle("Log:").
+		// KEYBINDINGSBOX:
+		// 	simple box containing a list of all the keybindings one can use.
+		keybindingsBox := tv.NewTextView()
+		fmt.Fprintf(keybindingsBox, keybindings)
+		keybindingsBox.SetTitle("Keybindings:").
 			SetBorder(true)
 
+		logBox := tv.NewTextView()
+		fmt.Fprintln(logBox, "Game started!")
+		logBox.SetTitle("Log:").
+			SetBorder(true)
+
+		// LOGBOX:
+		// 	box which shows a log of the past moves each player made.
 		targetBox := tv.NewTable()
 		RedrawTarget(&playerOne, targetBox)
 		targetBox.SetFixed(1, 1).
 			SetSelectable(true, true).
+			SetSelectedFunc(func(row, column int) {
+				targetBox.SetSelectable(false, false)
+				playerOne.Hit(column-1, row-1)
+				fmt.Fprintf(logBox, "%v: %c%v\n", playerOne.name, letters[column-1], row-1)
+				RedrawTarget(&playerOne, targetBox)
+			}).
 			SetDoneFunc(func(key tc.Key) {
 				if key == tc.KeyEscape {
 					// TODO: change this for a dopdown prompt "Are you sure? (Y/N)"
 					app.Stop()
 				}
-				if key == tc.KeyEnter {
-					x, y := targetBox.GetSelection()
-					fmt.Println("X:", x)
-					fmt.Println("Y:", y)
-				}
 			}).
 			SetBorder(true).
 			SetTitle("The enemy:")
 
+		// PRIMARYBOX:
+		// 	box containing the board showing the players boat layout.
 		primaryBox := tv.NewTable()
 		RedrawPrimary(&playerOne, primaryBox)
 		primaryBox.SetFixed(1, 1).
 			SetBorder(true).
 			SetTitle("You:")
 
-		gainsBox := tv.NewList().
-			SetBorder(true).
+		// GAINSBOX:
+		// 	box showing the names of all the ennemies boats which are sunk.
+		// 	each sunk boat has a small display of the boat going with it.
+		gainsBox := tv.NewTextView()
+		RedrawGains(&playerOne, gainsBox)
+		gainsBox.SetBorder(true).
 			SetTitle("Gains:")
 
-		lossesBox := tv.NewList().
-			SetBorder(true).
+		// LOSSESBOX:
+		// 	box showing the names of all the players boats which are sunk.
+		// 	each sunk boat has a small display of the boat going with it.
+		lossesBox := tv.NewTextView()
+		RedrawGains(&playerOne, lossesBox)
+		lossesBox.SetBorder(true).
 			SetTitle("Losses:")
 
+		// COMMANDBOX:
+		// 	box containing an input field which is to be used as a command prompt.
+		// 	coordinates can be inputed directly and typing quit will exit the game.
 		commandBox := tv.NewInputField().
 			SetBorder(true).
 			SetTitle("Command:")
@@ -242,114 +237,6 @@ func main() {
 
 		if err := app.SetRoot(dashboard, true).Run(); err != nil {
 			panic(err)
-		}
-	}
-}
-
-func RedrawTarget(plyr *player, table *tv.Table) {
-	// generating slice string for the table:
-	// We initialize a slice containing all the cells
-	// The first row will be the label of the columns
-	boardData := strings.Split("  /A/B/C/D/E/F/G/H/I/J", "/")
-	// For every row (r)
-	for r := 0; r < 10; r++ {
-		// Each row starts with the row label/number
-		// A space makes the table centered by indenting it...
-		str := " " + strconv.Itoa(r)
-		boardData = append(boardData, str)
-		// For every column (c)
-		for c := 0; c < 10; c++ {
-			// First thing: is the coordinate hit or not?
-			switch plyr.target[r][c][0] {
-			// The coordinate is NOT hit:
-			case 0:
-				// Add the `~` symbol
-				boardData = append(boardData, boatchars[1][0])
-			// If the coordinate is NOT hit:
-			default:
-				// Is the coordinate water?
-				switch plyr.prey.primary[r][c][0] {
-				// It IS water:
-				case 6:
-					// Add the `◌` symbol
-					boardData = append(boardData, boatchars[0][0])
-				// It's NOT water:
-				default:
-					// Is the ID of the boat at that coordinate marked as a gain?
-					switch plyr.gains[plyr.prey.primary[r][c][0]] {
-					// It IS marked as a gain:
-					case true:
-						// Show the boat as it's meant to be:
-						// (hit boatchars: with `position` marked in the opponents primary)
-						boardData = append(boardData, boatchars[0][plyr.prey.primary[r][c][1]])
-					default:
-						// Nope, you're getting a censored tile: `▣`
-						boardData = append(boardData, misteryHit)
-					}
-				}
-			}
-		}
-	}
-	table.Clear()
-	for r := 0; r < 11; r++ {
-		for c := 0; c < 11; c++ {
-			color, selectable := tc.ColorDarkCyan, true
-			if r < 1 || c < 1 {
-				color, selectable = tc.ColorPurple, false
-			}
-			if boardData[r*11+c] != `~` && !(r < 1 || c < 1) {
-				selectable, color = false, tc.ColorRed
-			}
-			table.SetCell(r, c,
-				tv.NewTableCell(boardData[r*11+c]).
-					SetTextColor(color).
-					SetAlign(tv.AlignCenter).
-					SetSelectable(selectable))
-		}
-	}
-}
-
-func RedrawPrimary(plyr *player, table *tv.Table) {
-	// generating slice string for the table:
-	// We initialize a slice containing all the cells
-	// The first row will be the label of the columns
-	boardData := strings.Split("  /A/B/C/D/E/F/G/H/I/J", "/")
-	// For every row (r)
-	for r := 0; r < 10; r++ {
-		// Each row starts with the row label/number
-		// A space makes the table centered by indenting it...
-		str := " " + strconv.Itoa(r)
-		boardData = append(boardData, str)
-		// For every column (c)
-		for c := 0; c < 10; c++ {
-			// Is the coordinate hit or not?
-			switch plyr.primary[r][c][2] {
-			// It is NOT
-			case 0:
-				// boatchars selects is character from the not-hit slice
-				boardData = append(boardData, boatchars[1][plyr.primary[r][c][1]])
-			// It IS
-			case 1:
-				// boatchars selects is character from the hit slice
-				boardData = append(boardData, boatchars[0][plyr.primary[r][c][1]])
-			}
-		}
-	}
-	table.Clear()
-	for r := 0; r < 11; r++ {
-		for c := 0; c < 11; c++ {
-			color := tc.ColorDarkCyan
-			if r < 1 || c < 1 {
-				color = tc.ColorPurple
-			}
-			if boardData[r*11+c] != `~` && !(r < 1 || c < 1) {
-				color = tc.ColorRed
-			}
-			table.SetCell(r, c,
-				tv.NewTableCell(boardData[r*11+c]).
-					SetTextColor(color).
-					SetSelectable(false).
-					SetAlign(tv.AlignCenter))
 		}
 	}
 }
