@@ -63,11 +63,12 @@ func main() {
 		playerOne.Hit(4, 8) // (E,8)
 		playerOne.Hit(9, 2) // (I,2)
 
-		// Display both primary boards in stdout
-		fmt.Println("Player One (vue de ses propres pièces):", playerOne.DisplayPrimary())
-		fmt.Println("Player Two (vue de ses propres pièces):", playerTwo.DisplayPrimary())
-		fmt.Println("Player One (vue des pièces de son ennemi):", playerOne.DisplayTarget())
-		fmt.Println("Player Two (vue des pièces de son ennemi):", playerTwo.DisplayTarget())
+		// // Display both primary boards in stdout
+		// fmt.Println("Player One (vue de ses propres pièces):", playerOne.DisplayPrimary())
+		// fmt.Println("Player Two (vue de ses propres pièces):", playerTwo.DisplayPrimary())
+		// fmt.Println("Player One (vue des pièces de son ennemi):", playerOne.DisplayTarget())
+		// fmt.Println("Player Two (vue des pièces de son ennemi):", playerTwo.DisplayTarget())
+
 	}
 
 	/* TVIEW UI SETUP:
@@ -138,7 +139,7 @@ func main() {
 	var log string = "Game Started!"
 
 	// Until Somedody Wins:
-	for win := false; win == false; {
+	for winner := currentPlayer; !(winner.gains == [5]bool{true, true, true, true, true}); {
 		currentPlayer.Hit(9, 9)
 
 		// Make the loop toggle between both players
@@ -187,6 +188,10 @@ func main() {
 			SetDoneFunc(func(key tc.Key) {
 				if key == tc.KeyEscape {
 					// TODO: change this for a dopdown prompt "Are you sure? (Y/N)"
+					for i := 0; i < 5; i++ {
+						currentPlayer.prey.gains[i] = true
+						currentPlayer.gains[i] = true
+					}
 					app.Stop()
 				}
 			}).

@@ -13,7 +13,7 @@ Command mode:
 	q:	quit
 `
 
-const letters = "ABCDEFGHI"
+const letters = "ABCDEFGHIJ"
 
 /* Boats Info:
    |------------+--------+----------------|
