@@ -131,11 +131,12 @@ func (plyr *player) InitBoat(boatID, orientation, x, y int) {
 }
 
 func (plyr *player) Hit(x, y int) bool {
+	// We change the coord status to hit
+	// We add the id of the boat since we know it now.
 	plyr.prey.primary[y][x][2] = 1
-	// We change the coord status to hit and add the id of
-	// the boat since we know it now.
 	plyr.target[y][x] = [2]int{1, plyr.prey.primary[y][x][0]}
-	if BoatID := plyr.prey.primary[y][x][0]; BoatID < 6 {
+	// If that coordinate contains a boat
+	if BoatID := plyr.prey.primary[y][x][0]; BoatID < 5 {
 		switch plyr.prey.primary[y][x][1] {
 		case 1, 2, 5: // If the hit boat was vertical
 			// We suppose the boat is sunk since it only takes one unhit coordinate to prove this wrong

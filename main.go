@@ -21,7 +21,6 @@ func main() {
 	playerTwo.InitBoard(&playerOne)
 
 	if settings.debug {
-
 		// PLACING PLAYER ONE BOATS:
 		// Carrier: (ID=0), horizontal, (1,1)
 		playerOne.InitBoat(0, horizontal, 1, 1)
@@ -69,106 +68,121 @@ func main() {
 		fmt.Println("Player Two (vue de ses propres pièces):", playerTwo.DisplayPrimary())
 		fmt.Println("Player One (vue des pièces de son ennemi):", playerOne.DisplayTarget())
 		fmt.Println("Player Two (vue des pièces de son ennemi):", playerTwo.DisplayTarget())
+	}
 
-		/* TVIEW UI SETUP:
-		┌------------------------------------------------------┐
-		|dashboard                                             |
-		|┌----------------------------------------------------┐|
-		||headerBox                                           ||
-		|└----------------------------------------------------┘|
-		|┌----------------------------------------------------┐|
-		||bottomFlex                                          ||
-		||┌-------------------┐ ┌----------------------------┐||
-		||| infoFlex          | | playFlex                   |||
-		|||┌-----------------┐| |┌--------------------------┐|||
-		|||| keybindingsBox  || || targetFlex               ||||
-		||||                 || ||┌------------------------┐||||
-		||||                 || ||| targetBox | gainsBox   |||||
-		||||                 || |||           |            |||||
-		||||                 || |||           |            |||||
-		||||                 || ||└------------------------┘||||
-		||||                 || |└--------------------------┘|||
-		||||                 || |┌--------------------------┐|||
-		|||└-----------------┘| || primaryFlex              ||||
-		|||┌-----------------┐| ||┌------------------------┐||||
-		|||| logBox          || ||| primaryBox | lossesBox |||||
-		||||                 || |||            |           |||||
-		||||                 || |||            |           |||||
-		||||                 || ||└------------------------┘||||
-		|||└-----------------┘| |└--------------------------┘|||
-		||└-------------------┘ └----------------------------┘||
-		|└----------------------------------------------------┘|
-		└------------------------------------------------------┘
+	/* TVIEW UI SETUP:
+	┌------------------------------------------------------┐
+	|dashboard                                             |
+	|┌----------------------------------------------------┐|
+	||headerBox                                           ||
+	|└----------------------------------------------------┘|
+	|┌----------------------------------------------------┐|
+	||bottomFlex                                          ||
+	||┌-------------------┐ ┌----------------------------┐||
+	||| infoFlex          | | playFlex                   |||
+	|||┌-----------------┐| |┌--------------------------┐|||
+	|||| keybindingsBox  || || targetFlex               ||||
+	||||                 || ||┌------------------------┐||||
+	||||                 || ||| targetBox | gainsBox   |||||
+	||||                 || |||           |            |||||
+	||||                 || |||           |            |||||
+	||||                 || ||└------------------------┘||||
+	||||                 || |└--------------------------┘|||
+	||||                 || |┌--------------------------┐|||
+	|||└-----------------┘| || primaryFlex              ||||
+	|||┌-----------------┐| ||┌------------------------┐||||
+	|||| logBox          || ||| primaryBox | lossesBox |||||
+	||||                 || |||            |           |||||
+	||||                 || |||            |           |||||
+	||||                 || ||└------------------------┘||||
+	|||└-----------------┘| |└--------------------------┘|||
+	||└-------------------┘ └----------------------------┘||
+	|└----------------------------------------------------┘|
+	└------------------------------------------------------┘
 
-		DASHBOARD:
-			flex structure containing everything.
+	DASHBOARD:
+		flex structure containing everything.
+	- Direction: rows
+
+	BOTTOMFLEX:
+		flex structure containing everything but the headerBox
+	- Direction: columns
+
+	INFOFLEX:
+		flex structure containing general info related boxes:
+			- keybindingsBox
+			- logBox
+	- Direction: rows
+
+	PLAYFLEX:
+		flex structure containing everything related to playing the game:
+			- targetFlex
+			- primaryFlex
 		- Direction: rows
 
-		BOTTOMFLEX:
-			flex structure containing everything but the headerBox
-		- Direction: columns
+	TARGETFLEX:
+		flex structure containing everything the player knows about his target:
+			- targetBox
+			- gainsBox
+	- Direction: columns
 
-		INFOFLEX:
-			flex structure containing general info related boxes:
-				- keybindingsBox
-				- logBox
-		- Direction: rows
+	PRIMARYFLEX:
+		flex structure containing everything the player knows about himself:
+			- primaryBox
+			- lossesBox
+	- Direction: columns
 
-		PLAYFLEX:
-			flex structure containing everything related to playing the game:
-				- targetFlex
-				- primaryFlex
-			- Direction: rows
+	*/
 
-		TARGETFLEX:
-			flex structure containing everything the player knows about his target:
-				- targetBox
-				- gainsBox
-		- Direction: columns
+	currentPlayer := &playerTwo
+	var log string = "Game Started!"
 
-		PRIMARYFLEX:
-			flex structure containing everything the player knows about himself:
-				- primaryBox
-				- lossesBox
-		- Direction: columns
+	// Until Somedody Wins:
+	for win := false; win == false; {
+		currentPlayer.Hit(9, 9)
 
-		TARGETBOX:
-			box containing the board where the player attacks his opponent
-			this box is focused by default and is of type table as it can be navigated.
-
-		*/
+		// Make the loop toggle between both players
+		if currentPlayer == &playerTwo {
+			currentPlayer = &playerOne
+		} else {
+			currentPlayer = &playerTwo
+		}
 
 		// Initializing the application
 		app := tv.NewApplication()
-
 		// HEADERBOX:
 		// 	box which displays in it's title the current player.
-		headerBox := tv.NewBox().SetTitle(playerOne.name).
+		headerBox := tv.NewBox().SetTitle(currentPlayer.name).
 			SetBorder(true)
-
 		// KEYBINDINGSBOX:
 		// 	simple box containing a list of all the keybindings one can use.
 		keybindingsBox := tv.NewTextView()
 		fmt.Fprintf(keybindingsBox, keybindings)
 		keybindingsBox.SetTitle("Keybindings:").
 			SetBorder(true)
-
-		logBox := tv.NewTextView()
-		fmt.Fprintln(logBox, "Game started!")
-		logBox.SetTitle("Log:").
-			SetBorder(true)
-
 		// LOGBOX:
 		// 	box which shows a log of the past moves each player made.
+		logBox := tv.NewTextView()
+		fmt.Fprintln(logBox, log)
+		logBox.SetTitle("Log:").
+			SetBorder(true)
+		// TARGETBOX:
+		// 	box containing the board where the player attacks his opponent
+		// 	this box is focused by default and is of type table as it can be navigated.
 		targetBox := tv.NewTable()
-		RedrawTarget(&playerOne, targetBox)
+		RedrawTarget(currentPlayer, targetBox)
 		targetBox.SetFixed(1, 1).
 			SetSelectable(true, true).
 			SetSelectedFunc(func(row, column int) {
+				// Hit the target at the chosen coordinate
+				fmt.Fprintf(logBox, log)
+				currentPlayer.Hit(column-1, row-1)
+				// The coordinate where the player is hitting will no longer be selectable
 				targetBox.SetSelectable(false, false)
-				playerOne.Hit(column-1, row-1)
-				fmt.Fprintf(logBox, "%v: %c%v\n", playerOne.name, letters[column-1], row-1)
-				RedrawTarget(&playerOne, targetBox)
+				logEntry := fmt.Sprintf("%v: %c%v\n", currentPlayer.name, letters[column-1], row-1)
+				log = fmt.Sprintf("%v%v", logEntry, log)
+				RedrawTarget(currentPlayer, targetBox)
+				app.Stop()
 			}).
 			SetDoneFunc(func(key tc.Key) {
 				if key == tc.KeyEscape {
@@ -182,55 +196,47 @@ func main() {
 		// PRIMARYBOX:
 		// 	box containing the board showing the players boat layout.
 		primaryBox := tv.NewTable()
-		RedrawPrimary(&playerOne, primaryBox)
+		RedrawPrimary(currentPlayer, primaryBox)
 		primaryBox.SetFixed(1, 1).
 			SetBorder(true).
 			SetTitle("You:")
-
 		// GAINSBOX:
 		// 	box showing the names of all the ennemies boats which are sunk.
 		// 	each sunk boat has a small display of the boat going with it.
 		gainsBox := tv.NewTextView()
-		RedrawGains(&playerOne, gainsBox)
+		RedrawGains(currentPlayer, gainsBox)
 		gainsBox.SetBorder(true).
 			SetTitle("Gains:")
-
 		// LOSSESBOX:
 		// 	box showing the names of all the players boats which are sunk.
 		// 	each sunk boat has a small display of the boat going with it.
 		lossesBox := tv.NewTextView()
-		RedrawGains(&playerOne, lossesBox)
+		RedrawLosses(currentPlayer, lossesBox)
 		lossesBox.SetBorder(true).
 			SetTitle("Losses:")
-
 		// COMMANDBOX:
 		// 	box containing an input field which is to be used as a command prompt.
 		// 	coordinates can be inputed directly and typing quit will exit the game.
 		commandBox := tv.NewInputField().
 			SetBorder(true).
 			SetTitle("Command:")
-
+		// Setting up the flexbox hell!
 		targetFlex := tv.NewFlex().SetDirection(tv.FlexColumn).
 			AddItem(targetBox, 26, 0, true).
 			AddItem(gainsBox, 26, 0, false)
-
 		primaryFlex := tv.NewFlex().SetDirection(tv.FlexColumn).
 			AddItem(primaryBox, 26, 0, false).
 			AddItem(lossesBox, 26, 0, false)
-
 		playFlex := tv.NewFlex().SetDirection(tv.FlexRow).
 			AddItem(targetFlex, 13, 0, true).
 			AddItem(primaryFlex, 13, 0, false).
 			AddItem(commandBox, 0, 1, false)
-
 		infoFlex := tv.NewFlex().SetDirection(tv.FlexRow).
 			AddItem(keybindingsBox, 0, 3, false).
 			AddItem(logBox, 0, 1, false)
-
 		bottomFlex := tv.NewFlex().SetDirection(tv.FlexColumn).
 			AddItem(infoFlex, 0, 1, false).
 			AddItem(playFlex, 52, 0, true)
-
 		dashboard := tv.NewFlex().SetDirection(tv.FlexRow).
 			AddItem(headerBox, 2, 1, false).
 			AddItem(bottomFlex, 0, 1, true)
