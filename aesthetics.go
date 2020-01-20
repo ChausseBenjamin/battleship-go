@@ -4,6 +4,7 @@ package main
 // display or setup visuals without the use of tview.
 
 import (
+	"github.com/mbndr/figlet4go"
 	"strconv"
 )
 
@@ -106,6 +107,18 @@ func (plyr *player) DisplayTarget() string {
 var boatchars = [2][7]string{
 	{`◌`, `▲`, `▼`, `◀`, `▶`, `▮`, `▬`},
 	{`~`, `△`, `▽`, `◁`, `▷`, `▯`, `▭`},
+}
+
+func figletWrite(text string) string {
+	ascii := figlet4go.NewAsciiRender()
+	options := figlet4go.NewRenderOptions()
+	options.FontName = "larry3d"
+	options.FontColor = []figlet4go.Color{
+		figlet4go.ColorCyan,
+	}
+	// The underscore would be an error
+	renderStr, _ := ascii.Render(text)
+	return renderStr
 }
 
 // This constant keeps information about boats that aren't totally sunk secret.

@@ -163,8 +163,7 @@ func main() {
 	var log string = "Game Started!"
 
 	// Until Somedody Wins:
-	for winner := currentPlayer; !(winner.gains == [5]bool{true, true, true, true, true}); {
-		currentPlayer.Hit(9, 9)
+	for winner := currentPlayer; winner.gains != [5]bool{true, true, true, true, true}; {
 
 		// Make the loop toggle between both players
 		if currentPlayer == &playerTwo {
@@ -273,5 +272,31 @@ func main() {
 		if err := app.SetRoot(dashboard, true).Run(); err != nil {
 			panic(err)
 		}
+
+		waitScreen := tv.NewApplication()
+		waitText := tv.NewTextView().SetDoneFunc(func(key tc.Key) {
+			if key == tc.KeyEnter {
+				waitScreen.Stop()
+			}
+			if key == tc.KeyEscape {
+				for i := 0; i < 5; i++ {
+					playerOne.gains[i] = true
+					playerTwo.gains[i] = true
+					waitScreen.Stop()
+				}
+			}
+		})
+
+		fmt.Fprint(waitText, "Waiting for:\n", figletWrite(currentPlayer.name), "\nPress Enter to continue...")
+
+		if winner.gains != [5]bool{true, true, true, true, true} {
+			if err := waitScreen.SetRoot(waitText, true).Run(); err != nil {
+				panic(err)
+			} else if (winner.gains == [5]bool{true, true, true, true, true}) && (winner.prey.gains != [5]bool{true, true, true, true, true}) {
+				waitText.Clear()
+				fmt.Fprint(waitText, figletWrite(winner.name), "\n", figletWrite("is the winner!"))
+			}
+		}
+
 	}
 }
