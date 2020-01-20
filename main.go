@@ -14,11 +14,35 @@ func main() {
 	}
 
 	// SETUP:
-	var playerOne = player{name: "Ben"}
-	var playerTwo = player{name: "Phil"}
+	var playerOne = player{name: "P1"}
+	var playerTwo = player{name: "P2"}
 	// Setting up prey for when using Hit function
 	playerOne.InitBoard(&playerTwo)
 	playerTwo.InitBoard(&playerOne)
+
+	formApp := tv.NewApplication()
+
+	form := tv.NewForm().
+		AddInputField("Player 1 name:", playerOne.name, 30, nil, func(text string) {
+			playerOne.name = text
+		}).
+		AddInputField("Player 2 name:", playerTwo.name, 30, nil, func(text string) {
+			playerTwo.name = text
+		}).
+		AddButton("Start", func() {
+			formApp.Stop()
+		}).
+		AddButton("Quit", func() {
+			for i := 0; i < 5; i++ {
+				playerOne.gains[i] = true
+				playerTwo.gains[i] = true
+			}
+			formApp.Stop()
+		})
+
+	if err := formApp.SetRoot(form, true).Run(); err != nil {
+		panic(err)
+	}
 
 	if settings.debug {
 		// PLACING PLAYER ONE BOATS:
