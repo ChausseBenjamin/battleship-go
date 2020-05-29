@@ -287,7 +287,7 @@ func main() {
 			}
 		})
 
-		fmt.Fprint(waitText, "Waiting for:\n", figletWrite(currentPlayer.name), "\nPress Enter to continue...")
+		fmt.Fprint(waitText, "Waiting for:\n", figletWrite(currentPlayer.prey.name), "\nPress Enter to continue...")
 
 		if winner.gains != [5]bool{true, true, true, true, true} {
 			if err := waitScreen.SetRoot(waitText, true).Run(); err != nil {

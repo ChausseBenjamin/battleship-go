@@ -55,40 +55,56 @@ var boatlist = [5][2][5]int{
 // target stores info the player knows about the ennemy.
 // gains keeps track of the ships the player has managed to sink.
 type player struct {
-	name    string
+	// name of the player
+	// 	It is used for scoreboards but also throughout
+	// 	the game to announce turns.
+	name string
+	// primary is a 3 dimensional slice containing information
+	// about the players' own boats.
+	//	Structure:
+	//		[y][x][boatID, position, hitStatus]int
+	//		- [y][x]
+	//			The last slice index defines his coordinates in the x,y axis.
+	//		- BoatID:
+	//			n+1: Water
+	//			n: ID of the boat
+	//		- Position:
+	//			0: Water
+	//			1: North arrow
+	//			2: South arrow
+	//			3: West  arrow
+	//			4: East  arrow
+	//			5: Vertical   middle
+	//			6: Horizontal middle
+	//		- HitStatus:
+	//			0: Unhit
+	//			1: Hit
 	primary [10][10][3]int
-	// Primary Boat Tile Vector
-	//  [y][x][boatID, position, hitStatus]int
-	//  - [y][x]
-	//	 	The last slice index defines his coordinates in the x,y axis.
-	//  - BoatID:
-	//  	n+1: Water
-	//  	n: ID of the boat
-	//  - Position:
-	//  	0: Water
-	//  	1: North arrow
-	//  	2: South arrow
-	//  	3: West  arrow
-	//  	4: East  arrow
-	//  	5: Vertical   middle
-	//  	6: Horizontal middle
-	//  - HitStatus:
-	//  	0: Unhit
-	//  	1: Hit
+	// target is a 3 dimensional slice containing the information
+	// the player knows about his opponent.
+	//	Structure:
+	//		[ hit, id ]
+	//		- hit:
+	//			true: Was hit
+	//			false: Has not been hit
+	//		- id:
+	//			0: water or unknown
+	//			n: ID of the boat
 	target [10][10][2]int
-	// Target Boat Tile Vector
-	// [ hit, id ]
-	// - hit:
-	// 	true: Was hit
-	// 	false: Has not been hit
-	// - id:
-	// 	0: water or unknown
-	// 	n: ID of the boat
+	// gains is a slice containing the list of boats the player
+	// has destroyed.
+	// 	Structure:
+	//		- The index in the slice refers to the boatID
+	//		- true if the boat is sunk
 	gains [5]bool
-	// True if a boat index (ID) is sunk
+	// prey is a pointer targetting the player's opponent.
+	// 	It allows to access it's board to retrieve and edit it's
+	//  information when the current player makes a move.
 	prey *player
 }
 
+// InitBoard creates two blank 3 dimensional slice:
+// The primary slice and the prey slice
 func (plyr *player) InitBoard(opponent *player) {
 	// Sets the players' opponent
 	plyr.prey = opponent
@@ -101,7 +117,7 @@ func (plyr *player) InitBoard(opponent *player) {
 	}
 }
 
-// initBoat places a boat on a players primary grid.
+// InitBoat places a boat on a players primary grid.
 // boat sizes are defined by the boatlist variable.
 // Consult it for more info.
 func (plyr *player) InitBoat(boatID, orientation, x, y int) {
